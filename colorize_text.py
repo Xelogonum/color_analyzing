@@ -18,23 +18,22 @@ class Application(Frame):
 	def pressed_enter(self, e):
 		text = self.text_entry.get()
 
+		shift = 50
+		if self.last_word is None:
+			self.last_word = self.color_field.create_text(shift, shift, font=('Helvetica', '13'), text=" ")		
+
 		for word in text.split(" "):
-			if len(self.words) == 0:
-				self.words.append(self.color_field.create_text(10, 10, font=('Helvetica', '13'), text=word, fill="#%02x%02x%02x" % text2color(mapped, word)))
-			else:
-				x = sum(self.color_field.bbox(word)[2] for word in self.words)
+			x = self.color_field.bbox(self.last_word)[2]
+			y = shift + 10 * (x // self.canvas_width)
 
-				y = 10 * (x // self.canvas_width)
-
-				print(x, y)
-				
-				self.words.append(self.color_field.create_text(x, y, font=('Helvetica', '13'), text=word, fill="#%02x%02x%02x" % text2color(mapped, word)))
-
+			print(x, y)
+			
+			self.last_word = self.color_field.create_text(x, y, font=('Helvetica', '13'), text=word, fill="#%02x%02x%02x" % text2color(mapped, word))
 
 	def create_widgets(self):
 		self.color_field = Canvas(self, height=self.canvas_height, width=self.canvas_width)
 		self.text_entry = Entry(font=('Helvetica', '13'))
-		self.words = []
+		self.last_word = None
 		
 		self.color_field.grid()
 		self.text_entry.grid(column=0, row=0, sticky=NW, columnspan=5)
