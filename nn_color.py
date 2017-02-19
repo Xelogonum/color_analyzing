@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 from word_tone import text2color
 
-net = nl.net.newelm([[0, 1], [0, 1], [0, 1]], [10, 1])
+net = nl.net.newff([[0, 1], [0, 1], [0, 1]], [17, 1], [nl.trans.PureLin()]*2) 
 
 with open("normalized_trainset", "rb") as f:
 	trainset = pickle.load(f)
@@ -19,6 +19,11 @@ net_input = np.array(examples).reshape(len(examples), len(examples[0]))
 net_target = np.array(target).reshape(len(target), len(target[0]))
 
 error = net.train(net_input, net_target, epochs=2000, show=10, goal=0.1)
+
+print(min(error))
+
+with open("color_nn", "wb") as f:
+	pickle.dump(net, f)
 
 with open("words2color_hash", "rb") as f:
 	mapped = pickle.load(f)
