@@ -118,6 +118,6 @@ def text2color(wc_table, text):
 	return (r, g, b)
 
 if __name__ == '__main__':
-	for word in ("luck", "hate", "love", "happiness", "like"):
+	for word in ("luck"):
 		word_color(word)
 		word_color_weighted(word)

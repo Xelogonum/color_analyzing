@@ -2,41 +2,63 @@ import neurolab as nl
 import numpy as np
 import pickle
 from word_tone import text2color
+from random import shuffle
 
-net = nl.net.newff([[0, 1], [0, 1], [0, 1]], [17, 1], [nl.trans.PureLin()]*2) 
+def create_worker():
+	net = nl.net.newelm([[0, 1], [0, 1], [0, 1]], [15, 1]) 
 
-with open("normalized_trainset", "rb") as f:
-	trainset = pickle.load(f)
+	with open("normalized_trainset", "rb") as f:
+		trainset = pickle.load(f)
 
-examples = []
-target = []
+	examples = []
+	target = []
 
-for exmpl in trainset:
-	examples.append(exmpl[0])
-	target.append([float(exmpl[1])])
+	shuffle(trainset)
+	for exmpl in trainset[:500]:
+		examples.append(exmpl[0])
+		target.append([float(exmpl[1])])
 
-net_input = np.array(examples).reshape(len(examples), len(examples[0]))
-net_target = np.array(target).reshape(len(target), len(target[0]))
+	net_input = np.array(examples).reshape(len(examples), len(examples[0]))
+	net_target = np.array(target).reshape(len(target), len(target[0]))
 
-error = net.train(net_input, net_target, epochs=2000, show=10, goal=0.1)
+	#print("net_input:\n", net_input)
+	#print("net_target:\n", net_target)
 
-print(min(error))
+	error = net.train(net_input, net_target, epochs=1000, show=10, goal=0.1)
 
-with open("color_nn", "wb") as f:
-	pickle.dump(net, f)
+	print(min(error))
 
-with open("words2color_hash", "rb") as f:
-	mapped = pickle.load(f)
+	with open("nn_worker", "wb") as f:
+		pickle.dump(net, f)
 
-def give_label(word):
-	color = text2color(mapped, word)
-	normalized_color = [[color[0]/255, color[1]/255, color[2]/255]]
+	return net
 
-	out = net.sim(np.array(normalized_color).reshape(len(normalized_color), len(normalized_color[0])))
-	print(out)
+def create_judge(worker):
+	net = nl.net.newff([[0, 1]], [10, 1]) 
+
+	with open("normalized_trainset", "rb") as f:
+		trainset = pickle.load(f)
+
+	examples = []
+	target = []
+
+	for exmpl in trainset:
+		exmpl[0] = [exmpl[0]]
+		examples.append(worker.sim(np.array(exmpl[0]).reshape(len(exmpl[0]), len(exmpl[0][0]))))
+		target.append([float(exmpl[1])])
+
+	net_input = np.array(examples).reshape(len(examples), len(examples[0]))
+	net_target = np.array(target).reshape(len(target), len(target[0]))
+
+	error = net.train(net_input, net_target, epochs=2000, show=10, goal=0.05)
+
+	print(min(error))
+
+	with open("nn_judge", "wb") as f:
+		pickle.dump(net, f)
 
 def main():
-	while True:
-		give_label(input("Enter: ").lower())
+	create_worker()
 
-main()
+if __name__ == '__main__':
+	main()
