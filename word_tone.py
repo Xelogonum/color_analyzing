@@ -40,12 +40,12 @@ def word_color_weighted(word):
 
 		weight += hls_color[2]
 		analyzed += 1
-		ap.draw_color("./colors/"+str(analyzed) + "_weighted", (int(color[0] * hls_color[2]), int(color[1] * hls_color[2]), int(color[2] * hls_color[2])))
+		#ap.draw_color("./colors/"+str(analyzed) + "_weighted", (int(color[0] * hls_color[2]), int(color[1] * hls_color[2]), int(color[2] * hls_color[2])))
 
 	r //= weight
 	g //= weight
 	b //= weight
-	ap.draw_color("./colors/"+word+"_weighted", (int(r), int(g), int(b)))
+	#ap.draw_color("./colors/"+word+"_weighted", (int(r), int(g), int(b)))
 
 	return (r, g, b)
 	
@@ -67,12 +67,12 @@ def word_color(word):
 		b += color[2]
 
 		analyzed += 1
-		ap.draw_color("./colors/"+str(analyzed), (color[0], color[1], color[2]))
+		#ap.draw_color("./colors/"+str(analyzed), (color[0], color[1], color[2]))
 
 	r //= analyzed
 	g //= analyzed
 	b //= analyzed
-	ap.draw_color("./colors/"+word+"_norm", (r, g, b))
+	#ap.draw_color("./colors/"+word+"_norm", (r, g, b))
 
 	return (r, g, b)
 	
